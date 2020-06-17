@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style type="text/css">
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+p{
+text-align:center;
+margin-top:5vh;
+font-size:6em;
+color:#6f17ff;
+font-weight:bold;
+font-style:oblique;
+text-transform:uppercase;
+text-decoration:underline;
+}
+table{
+margin:20vh 10vw 0 10vw;
+empty-cells:show;
+border-collapse:collapse;
+}
+td{
+width:26.6vw;
+height:26.6vw;
+background-color:#d1f3ff;
+font-size:8em;
+font-weight:bold;
+text-align:center;
+vertical-align:center;
+color:#0026ff;
+transition-property:all;
+transition-duration:0.7s;
+border:15px solid #5dddff;
+}
+td:active{
+background-color:#0026ff;
+color:#d1f3ff;
+}
+tr:first-child td{
+border-top:0;
+}
+tr:last-child td{
+border-bottom: 0;
+}
+td:first-child{
+border-left:0;
+}
+td:last-child{
+border-right:0;
+}
+.board{
+width:80vw;
+margin:5vh 10vw;
+display:flex;
+flex-flow:row nowrap;
+justify-content:space-around;
+}
+button{
+width:30%;
+height:150px;
+border:15px solid #5dddff;
+color:#5dddff;
+background-color:#000fff;
+font-size:2.5em;
+font-weight:bold;
+text-align:center;
+border-radius:35px;
+outline:none;
+transition-property:all;
+transition-duration:0.5s;
+}
+button:active{
+background-color:#5dddff;
+color:#000fff;
+}
+@media screen and (max-width:760px) {
+p{
+font-size:2.2em;
+}
+td{
+border-width:5px;
+font-size:3em;
+}
+button{
+height:60px;
+font-size:1em;
+border-width:5px;
+border-radius:15px;
+}
+}
+</style>
+</head>
+<body>
+<p>
+ cross and circles</p>
+<table>
+ <tr>
+  <td></td>
+  <td></td>
+  <td></td>
+ </tr>
+ <tr>
+  <td></td>
+  <td></td>
+  <td></td>
+ </tr>
+ <tr>
+  <td></td>
+  <td></td>
+  <td></td>
+ </tr>
+</table>
+<div class="board">
+ <button class="reset">
+  RESET
+ </button>
+ <button class="circle">
+  CIRCLE
+ </button>
+</div>
+</body>
+<script type="text/javascript">
+const circle=document.querySelector('.circle');
+const bl=document.querySelectorAll('td');
+const res=document.querySelector('.reset');
+const player='o';
+let act=0;
+
+circle.addEventListener('click',check_btn);
+res.addEventListener('click',reset);
+bl.forEach((x,i,r)=>{
+ bl[i].addEventListener('click',put)});
+function check_btn(){
+   act=1;
+   check();
+}
+function put(){
+ let b=event.currentTarget;
+ if(act){
+  b.textContent=player;
+  act=0;
+  }
+ ai();
+}
+function check(){
+ aq(0,1,2);
+ aq(3,4,5);
+ aq(6,7,8);
+ aq(0,3,6);
+ aq(1,4,7);
+ aq(2,5,8);
+ aq(0,4,8);
+ aq(2,4,6);
+}
+function aq(i,j,k){
+if(bl[i].textContent != ''){
+  if( ( bl[i].textContent==bl[j].textContent ) && ( bl[j].textContent==bl[k].textContent ) ){
+   if(bl[i].textContent=='x'){
+    alert('ai wins');
+    }
+   else{
+    alert('player wins');
+    }
+   }
+  }
+}
+function reset(){
+ bl.forEach((t,i,r)=>{
+  bl[i].textContent='';});
+}
+function ai(){
+ let xl=document.querySelectorAll('td');
+ let x=[];
+ let o=[];
+ const xo=[0,1,2,3,4,5,6,7,8,];
+ xl.forEach((a,i,r)=>{
+  if(a.textContent=='o'){
+   o.push(i);
+   }
+  if(a.textContent=='x'){
+   x.push(i);
+   }
+ });
+ let c_ai=check_ai(x,o,xo);
+ bl[c_ai].textContent='x';
+ return;
+}
+
+function check_ai(x,o,xo){
+ let fuck;
+ if(o.length==1){
+  if(xo.includes(o[0]-3)){
+   return (o[0]-3);
+  }
+  if(xo.includes(o[0]+3)){
+   return (o[0]+3);
+  }
+  if(xo.includes(o[0]-1)){
+   return (o[0]-1);
+  }
+ if(xo.includes(o[0]+1)){
+   return (o[0]+1);
+  }
+ }
+  fuck=check_ai_two(x,xo);
+  if(fuck){
+    fuck=check_ai_two(o,xo);
+    }
+  if(fuck){
+   return fuck;
+  }
+ for(let i=0; i<x.length ; i++){
+  if( ( xo.includes(x[i]-3) && bl[ x[i]-3 ].textContent=='' ) && ( xo.includes(x[i]-6) && bl[ x[i]-6 ].textContent=='' ) ){
+   return (x[i]-3);
+  }
+  if( ( xo.includes(x[i]+1) && bl[ x[i]+1 ].textContent=='' ) && ( xo.includes(x[i]+2) && bl[ x[i]+2 ].textContent=='' ) ){
+   return (x[i]+1);
+  }
+  if( ( xo.includes(x[i]+3) && bl[ x[i]+3 ].textContent=='' ) && ( xo.includes(x[i]+6) && bl[ x[i]+6 ].textContent=='' ) ){
+   return (x[i]+3);
+  }
+  if( ( xo.includes(x[i]-1) && bl[ x[i]-1 ].textContent=='' ) && ( xo.includes(x[i]-1) && bl[ x[i]-1 ].textContent=='' ) ){
+   return (x[i]-1);
+  }
+ }
+}
+function check_ai_two(z,xo){
+ for(let i=0;i<z.length;i++){
+  for(let j=i+1;j<z.length;j++){
+   if( ( z[j]==z[i]-3 && xo.includes(z[j]) ) && ( xo.includes(z[j]-3) && bl[z[j]-3]=='' ) ){
+    return ( z[j]-3 );
+   }
+   if( ( z[j]==z[i]+3 && xo.includes(z[j]) ) && ( xo.includes(z[j]+3) && bl[z[j]+3]=='' ) ){
+    return ( z[j]+3 );
+   }
+   if( ( z[j]==z[i]-1 && xo.includes(z[j]) ) && ( xo.includes(z[j]-1) && bl[z[j]-1]=='' ) ){
+    return ( z[j]-1 );
+   }
+   if( ( z[j]==z[i]+1 && xo.includes(z[j]) ) && ( xo.includes(z[j]+1) && bl[z[j]+1]=='' ) ){
+    return ( z[j]+1 );
+   }
+  }
+ }
+}
+</script>
+</body>
+</html>
